@@ -1,7 +1,8 @@
 Dumbwaiter
 ==========
 
-Dumbwaiter hoists your Rails application up to AWS using CloudFormation templates, OpsWorks and a rope.
+Dumbwaiter hoists your Rails application up to OpsWorks and ratchets deployment
+information back down.
 
 
 Installation
@@ -23,10 +24,17 @@ Or install it yourself as:
 Usage
 -----
 
-Build your CloudFormation template in `config/cloudformation.yml`.  Here's an example of a template:
+Deploy the "cinnamon" branch of the "syrup" application to the "Pancake" stack:
 
-    instance:
-      name:
+  `dumbwaiter deploy Pancake syrup cinnamon`
+
+Roll back the "Snowman" stack:
+
+  `dumbwaiter rollback Snowman`
+
+List the deployments on the "Maniacal Checklist" stack:
+
+  `dumbwaiter list "Maniacal Checklist"`
 
 
 Contributing

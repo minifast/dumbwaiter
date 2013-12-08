@@ -7,7 +7,7 @@ module Dumbwaiter
 
     class MissingStack < Error; end
 
-    desc "deploy STACK_NAME APP_NAME", "Deploy an application revision"
+    desc "deploy STACK_NAME APP_NAME GIT_REF", "Deploy an application revision"
     def deploy(stack_name, app_name, revision)
       opsworks.create_deployment(
         stack_id: stack_id_for_name(stack_name),
