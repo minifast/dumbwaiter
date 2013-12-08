@@ -3,15 +3,13 @@ require "aws-sdk-core"
 
 module Dumbwaiter
   class Cli < Thor
-    attr_writer :opsworks
-
     class MissingStack < Error; end
 
     desc "deploy STACK_NAME APP_NAME GIT_REF", "Deploy an application revision"
     def deploy(stack_name, app_name, revision)
       opsworks.create_deployment(
         stack_id: stack_id_for_name(stack_name),
-        command: {name: "deploy"},
+        command: {name: "deploy", args: {migrate: ["true"]}},
         custom_json: {deploy: {app_name => {scm: {revision: revision}}}}.to_json
       )
     end
@@ -27,9 +25,12 @@ module Dumbwaiter
     desc "list STACK_NAME", "Roll back an entire stack"
     def list(stack_name)
       stack_id = stack_id_for_name(stack_name)
-      opsworks.describe_deployments(stack_id: stack_id).map do |deployment|
-        revision = JSON.parse(deployment[:custom_json])["deploy"].values.first["scm"]["revision"]
-        Kernel.puts "#{deployment[:created_at]} - #{revision} - #{deployment[:status]}"
+      deployments = opsworks.describe_deployments(stack_id: stack_id).deployments
+      deployments.select { |d| d.command.name == "deploy" }.each do |deployment|
+        custom_json = deployment.custom_json
+        revision = JSON.parse(deployment.custom_json)["deploy"].values.first["scm"]["revision"] if custom_json
+        revision ||= "HEAD"
+        Kernel.puts "#{deployment.created_at} - #{deployment.status} - #{revision}"
       end
     end
 
@@ -42,13 +43,13 @@ module Dumbwaiter
 
       def stack_ids_by_name
         @stack_ids_by_name ||= stacks.reduce({}) do |result, stack|
-          result[stack[:name]] = stack[:stack_id]
+          result[stack.name] = stack.stack_id
           result
         end
       end
 
       def stacks
-        opsworks.describe_stacks
+        opsworks.describe_stacks.stacks
       end
 
       def opsworks
