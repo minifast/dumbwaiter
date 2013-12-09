@@ -28,9 +28,9 @@ Deploy the "cinnamon" branch of the "syrup" application to the "Pancake" stack:
 
   `dumbwaiter deploy Pancake syrup cinnamon`
 
-Roll back the "Snowman" stack:
+Roll back the "Snowman" stack's "dandruff" application:
 
-  `dumbwaiter rollback Snowman`
+  `dumbwaiter rollback Snowman dandruff`
 
 List the deployments on the "Maniacal Checklist" stack:
 
