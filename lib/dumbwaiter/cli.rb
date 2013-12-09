@@ -37,5 +37,10 @@ module Dumbwaiter
     rescue Dumbwaiter::Stack::NotFound => e
       raise Thor::Error.new(e.message)
     end
+
+    desc "stacks", "List all the stacks"
+    def stacks
+      Stack.all.each { |stack| Kernel.puts("#{stack.name}: #{stack.apps.map(&:name).join(', ')}") }
+    end
   end
 end

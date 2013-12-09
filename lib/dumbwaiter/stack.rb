@@ -30,10 +30,10 @@ class Dumbwaiter::Stack
   end
 
   def apps
-    @apps ||= Dumbwaiter::App.all(id, opsworks)
+    @apps ||= Dumbwaiter::App.all(self, opsworks)
   end
 
   def deployments
-    @deployments ||= Dumbwaiter::Deployment.all(id, opsworks)
+    @deployments ||= Dumbwaiter::Deployment.all(self, opsworks)
   end
 end

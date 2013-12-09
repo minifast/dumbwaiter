@@ -36,6 +36,10 @@ List the deployments on the "Maniacal Checklist" stack:
 
   `dumbwaiter list "Maniacal Checklist"`
 
+List the stacks and apps in your OpsWorks environment:
+
+  `dumbwaiter stacks`
+
 
 Contributing
 ------------

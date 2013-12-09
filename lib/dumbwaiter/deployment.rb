@@ -3,8 +3,8 @@ require "dumbwaiter/deployment_custom_json"
 class Dumbwaiter::Deployment
   attr_reader :opsworks_deployment
 
-  def self.all(stack_id, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
-    opsworks.describe_deployments(stack_id: stack_id).deployments.map { |d| new(d) }
+  def self.all(stack, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+    opsworks.describe_deployments(stack_id: stack.id).deployments.map { |d| new(d) }
   end
 
   def initialize(opsworks_deployment)

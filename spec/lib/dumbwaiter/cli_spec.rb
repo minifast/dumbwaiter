@@ -1,8 +1,8 @@
 require "spec_helper"
 
 describe Dumbwaiter::Cli do
-  let(:fake_stack) { double(:stack, name: "ducks", id: "wat") }
   let(:fake_app) { double(:app, name: "reifel") }
+  let(:fake_stack) { double(:stack, name: "ducks", id: "wat", apps: [fake_app]) }
 
   subject(:cli) { Dumbwaiter::Cli.new }
 
@@ -52,9 +52,7 @@ describe Dumbwaiter::Cli do
 
     context "when the stack does not exist" do
       it "blows up" do
-        expect {
-          cli.rollback("maple syrup", "reifel")
-        }.to raise_error(Thor::Error)
+        expect { cli.rollback("maple syrup", "reifel") }.to raise_error(Thor::Error)
       end
     end
   end
@@ -93,10 +91,15 @@ describe Dumbwaiter::Cli do
 
     context "when the stack does not exist" do
       it "blows up" do
-        expect {
-          cli.list("wat")
-        }.to raise_error(Thor::Error)
+        expect { cli.list("wat") }.to raise_error(Thor::Error)
       end
+    end
+  end
+
+  describe "#stacks" do
+    it "lists the stacks" do
+      Kernel.should_receive(:puts).with("ducks: reifel")
+      cli.stacks
     end
   end
 end

@@ -37,9 +37,10 @@ describe Dumbwaiter::Deployment do
   end
 
   describe ".all" do
+    let(:fake_stack) { double(:stack, id: "pancakes") }
     it "fetches all the deployments" do
       fake_opsworks.should_receive(:describe_deployments).with(stack_id: "pancakes")
-      Dumbwaiter::Deployment.all("pancakes", fake_opsworks).should have(1).app
+      Dumbwaiter::Deployment.all(fake_stack, fake_opsworks).should have(1).app
     end
   end
 end
