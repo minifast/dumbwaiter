@@ -1,4 +1,4 @@
-Dumbwaiter
+Dumbwaiter [![Build Status](https://travis-ci.org/minifast/dumbwaiter.png)](https://travis-ci.org/minifast/dumbwaiter)
 ==========
 
 Dumbwaiter hoists your Rails application up to OpsWorks and ratchets deployment
