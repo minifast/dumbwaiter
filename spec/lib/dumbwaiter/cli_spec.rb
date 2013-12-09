@@ -3,11 +3,15 @@ require "spec_helper"
 describe Dumbwaiter::Cli do
   let(:fake_stack) { double(:stack, name: "ducks", stack_id: "cool") }
   let(:fake_stacks) { double(:stacks, stacks: [fake_stack]) }
+
+  let(:fake_app) { double(:app, name: "reifel", app_id: "wat") }
+  let(:fake_apps) { double(:apps, apps: [fake_app]) }
+
   let(:custom_json) { {deploy: {"reifel" => {scm: {revision: "corn"}}}} }
 
   subject(:cli) { Dumbwaiter::Cli.new }
 
-  before { cli.opsworks.stub(describe_stacks: fake_stacks) }
+  before { cli.opsworks.stub(describe_stacks: fake_stacks, describe_apps: fake_apps) }
 
   describe "#deploy" do
     context "when the stack exists" do
@@ -37,9 +41,10 @@ describe Dumbwaiter::Cli do
       it "rolls back the stack with the resolved id" do
         cli.opsworks.should_receive(:create_deployment) do |params|
           params[:stack_id].should == "cool"
+          params[:app_id].should == "wat"
           params[:command].should == {name: "rollback"}
         end
-        cli.rollback("ducks")
+        cli.rollback("ducks", "reifel")
       end
     end
 
@@ -48,7 +53,7 @@ describe Dumbwaiter::Cli do
 
       it "blows up" do
         expect {
-          cli.rollback("ducks")
+          cli.rollback("ducks", "reifel")
         }.to raise_error(Dumbwaiter::Cli::MissingStack)
       end
     end
