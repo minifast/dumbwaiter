@@ -5,7 +5,7 @@ describe Dumbwaiter::Deployment do
   let(:custom_json) { JSON.dump(deploy: {"hockey" => {scm: {revision: "eh-buddy"}}}) }
   let(:fake_deployment) do
     double(:deployment,
-      created_at: "yo",
+      created_at: "last Tuesday",
       command: fake_command,
       status: "badical",
       custom_json: custom_json
@@ -17,11 +17,11 @@ describe Dumbwaiter::Deployment do
   subject(:deployment) { Dumbwaiter::Deployment.new(fake_deployment) }
 
   its(:opsworks_deployment) { should == fake_deployment }
-  its(:created_at) { should == "yo" }
+  its(:created_at) { should == DateTime.parse("last Tuesday") }
   its(:command_name) { should == "deplode" }
   its(:status) { should == "badical" }
   its(:git_ref) { should == "eh-buddy" }
-  its(:to_log) { should == "yo - deplode - badical - eh-buddy" }
+  its(:to_log) { should == "#{DateTime.parse("last Tuesday")} - deplode - badical - eh-buddy" }
 
   context "when custom_json is nil" do
     let(:fake_deployment) do

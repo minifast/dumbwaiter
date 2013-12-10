@@ -12,7 +12,7 @@ class Dumbwaiter::Deployment
   end
 
   def created_at
-    opsworks_deployment.created_at
+    DateTime.parse(opsworks_deployment.created_at)
   end
 
   def command_name
