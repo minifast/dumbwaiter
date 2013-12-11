@@ -5,7 +5,7 @@ require "dumbwaiter/stack"
 
 module Dumbwaiter
   class Cli < Thor
-    desc "deploy STACK_NAME APP_NAME GIT_REF", "Deploy an application revision"
+    desc "deploy STACK APP GIT_REF", "Deploy an application revision"
     def deploy(stack_name, app_name, revision)
       stack = Stack.find(stack_name)
       app = App.find(stack, app_name)
@@ -14,12 +14,12 @@ module Dumbwaiter
       raise Thor::Error.new(e.message)
     end
 
-    desc "list STACK_NAME", "List all the deployments for a stack"
+    desc "list STACK", "List all the deployments for a stack"
     def list(stack_name)
       stack = Stack.find(stack_name)
 
       deployments = stack.deployments.select do |deployment|
-        %w(rollback deploy update_custom_cookbooks).include?(deployment.command_name)
+        %w(rollback deploy update_custom_cookbooks execute_recipes).include?(deployment.command_name)
       end
 
       deployments.each do |deployment|
@@ -36,7 +36,7 @@ module Dumbwaiter
       raise Thor::Error.new(e.message)
     end
 
-    desc "rollback STACK_NAME APP_NAME", "Roll back an application"
+    desc "rollback STACK APP", "Roll back an application"
     def rollback(stack_name, app_name)
       stack = Stack.find(stack_name)
       app = App.find(stack, app_name)
@@ -45,9 +45,27 @@ module Dumbwaiter
       raise Thor::Error.new(e.message)
     end
 
+    desc "run_recipe STACK LAYER RECIPE", "Run a recipe against a stack's layer"
+    def run_recipe(stack_name, layer_name, recipe)
+      stack = Stack.find(stack_name)
+      layer = Layer.find(stack, layer_name)
+      layer.run_recipe(recipe)
+    rescue Dumbwaiter::Stack::NotFound, Dumbwaiter::Layer::NotFound => e
+      raise Thor::Error.new(e.message)
+    end
+
     desc "stacks", "List all the stacks"
     def stacks
       Stack.all.each { |stack| Kernel.puts("#{stack.name}: #{stack.apps.map(&:name).join(', ')}") }
+    end
+
+    desc "layers STACK", "List all the layers for a stack"
+    def layers(stack_name)
+      stack = Stack.find(stack_name)
+      layer_names = stack.layers.map(&:shortname)
+      Kernel.puts(layer_names.join(', '))
+    rescue Dumbwaiter::Stack::NotFound => e
+      raise Thor::Error.new(e.message)
     end
   end
 end

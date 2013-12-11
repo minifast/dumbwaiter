@@ -1,5 +1,6 @@
 require "dumbwaiter/app"
 require "dumbwaiter/deployment"
+require "dumbwaiter/layer"
 
 class Dumbwaiter::Stack
   attr_reader :opsworks, :opsworks_stack
@@ -35,6 +36,10 @@ class Dumbwaiter::Stack
 
   def deployments
     @deployments ||= Dumbwaiter::Deployment.all(self, opsworks)
+  end
+
+  def layers
+    @layers ||= Dumbwaiter::Layer.all(self, opsworks)
   end
 
   def rechef

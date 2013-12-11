@@ -6,12 +6,14 @@ describe Dumbwaiter::Stack do
   let(:fake_opsworks) { double(:opsworks, describe_stacks: fake_stacks) }
   let(:fake_app) { double(:app) }
   let(:fake_deployment) { double(:deployment) }
+  let(:fake_layer) { double(:layer) }
 
   subject(:stack) { Dumbwaiter::Stack.new(fake_stack, fake_opsworks) }
 
   before do
     Dumbwaiter::App.stub(all: [fake_app])
     Dumbwaiter::Deployment.stub(all: [fake_deployment])
+    Dumbwaiter::Layer.stub(all: [fake_layer])
   end
 
   its(:opsworks_stack) { should == fake_stack }
@@ -20,6 +22,7 @@ describe Dumbwaiter::Stack do
 
   its(:apps) { should == [fake_app] }
   its(:deployments) { should == [fake_deployment] }
+  its(:layers) { should == [fake_layer] }
 
   describe ".all" do
     it "fetches all the stacks" do
