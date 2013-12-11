@@ -61,6 +61,10 @@ Deploy the "cinnamon" branch of the "syrup" application to the "Pancake" stack:
 
   `dumbwaiter deploy Pancake syrup cinnamon`
 
+List all the layers of the "Pizza" stack:
+
+  `dumbwaiter layers Pizza`
+
 List the deployments on the "Maniacal Checklist" stack:
 
   `dumbwaiter list "Maniacal Checklist"`
@@ -72,6 +76,10 @@ Upload all the custom cookbooks for the "Sweden" stack:
 Roll back the "Snowman" stack's "dandruff" application:
 
   `dumbwaiter rollback Snowman dandruff`
+
+Run the sneakers recipe on all the angsty instances of the "Documentarian" stack:
+
+  `dumbwaiter run_recipe Documentarian angsty sneakers`
 
 List the stacks and apps in your OpsWorks environment:
 
