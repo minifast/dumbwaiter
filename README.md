@@ -21,7 +21,7 @@ Dumbwaiter prescribes a very specific OpsWorks-centric workflow with the same
 feeling of the Scalarium gem's CLI:
 
   * Create OpsWorks stacks, layers and instances via YAML files
-  * Collect custom Chef cookbooks via Berkshelf and upload to S3
+  * Assign a stack's custom Chef cookbooks as a custom GitHub repo
   * Create an application corresponding to a GitHub repo
   * Run versioned deployments, rollbacks and one-off recipes
 
