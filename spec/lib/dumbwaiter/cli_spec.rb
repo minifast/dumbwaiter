@@ -79,6 +79,15 @@ describe Dumbwaiter::Cli do
         end
       end
 
+      context "when the deployment is a custom cookbook update" do
+        let(:fake_deployment) { double(:deployment, command_name: "update_custom_cookbooks", to_log: "whee!") }
+
+        it "lists the deployment" do
+          Kernel.should_receive(:puts).with("whee!")
+          cli.list("ducks")
+        end
+      end
+
       context "when the deployment is something else" do
         let(:fake_deployment) { double(:deployment, command_name: "gargle", to_log: "brblrgl") }
 
@@ -100,6 +109,21 @@ describe Dumbwaiter::Cli do
     it "lists the stacks" do
       Kernel.should_receive(:puts).with("ducks: reifel")
       cli.stacks
+    end
+  end
+
+  describe "#rechef" do
+    context "when the stack exists" do
+      it "deploys the stack with the resolved id" do
+        fake_stack.should_receive(:rechef)
+        cli.rechef("ducks")
+      end
+    end
+
+    context "when the stack does not exist" do
+      it "blows up" do
+        expect { cli.rechef("toques") }.to raise_error(Thor::Error)
+      end
     end
   end
 end

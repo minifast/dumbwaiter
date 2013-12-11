@@ -7,7 +7,7 @@ describe Dumbwaiter::Stack do
   let(:fake_app) { double(:app) }
   let(:fake_deployment) { double(:deployment) }
 
-  subject(:stack) { Dumbwaiter::Stack.new(fake_stack) }
+  subject(:stack) { Dumbwaiter::Stack.new(fake_stack, fake_opsworks) }
 
   before do
     Dumbwaiter::App.stub(all: [fake_app])
@@ -40,6 +40,16 @@ describe Dumbwaiter::Stack do
           Dumbwaiter::Stack.find("teeth", fake_opsworks)
         }.to raise_error(Dumbwaiter::Stack::NotFound)
       end
+    end
+  end
+
+  describe "#rechef" do
+    it "creates a deployment" do
+      fake_opsworks.should_receive(:create_deployment) do |params|
+        params[:stack_id].should == "cool"
+        params[:command].should == {name: "update_custom_cookbooks"}
+      end
+      stack.rechef
     end
   end
 end

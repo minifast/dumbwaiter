@@ -36,4 +36,8 @@ class Dumbwaiter::Stack
   def deployments
     @deployments ||= Dumbwaiter::Deployment.all(self, opsworks)
   end
+
+  def rechef
+    opsworks.create_deployment(stack_id: id, command: {name: "update_custom_cookbooks"})
+  end
 end

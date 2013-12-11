@@ -14,27 +14,34 @@ module Dumbwaiter
       raise Thor::Error.new(e.message)
     end
 
-    desc "rollback STACK_NAME APP_NAME", "Roll back an application"
-    def rollback(stack_name, app_name)
-      stack = Stack.find(stack_name)
-      app = App.find(stack, app_name)
-      app.rollback
-    rescue Dumbwaiter::Stack::NotFound, Dumbwaiter::App::NotFound => e
-      raise Thor::Error.new(e.message)
-    end
-
     desc "list STACK_NAME", "List all the deployments for a stack"
     def list(stack_name)
       stack = Stack.find(stack_name)
 
       deployments = stack.deployments.select do |deployment|
-        %w(rollback deploy).include?(deployment.command_name)
+        %w(rollback deploy update_custom_cookbooks).include?(deployment.command_name)
       end
 
       deployments.each do |deployment|
         Kernel.puts(deployment.to_log)
       end
     rescue Dumbwaiter::Stack::NotFound => e
+      raise Thor::Error.new(e.message)
+    end
+
+    desc "rechef STACK", "Upload new cookbooks to a stack"
+    def rechef(stack_name)
+      Stack.find(stack_name).rechef
+    rescue Dumbwaiter::Stack::NotFound => e
+      raise Thor::Error.new(e.message)
+    end
+
+    desc "rollback STACK_NAME APP_NAME", "Roll back an application"
+    def rollback(stack_name, app_name)
+      stack = Stack.find(stack_name)
+      app = App.find(stack, app_name)
+      app.rollback
+    rescue Dumbwaiter::Stack::NotFound, Dumbwaiter::App::NotFound => e
       raise Thor::Error.new(e.message)
     end
 

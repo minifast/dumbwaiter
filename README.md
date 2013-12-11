@@ -5,6 +5,39 @@ Dumbwaiter hoists your Rails application up to OpsWorks and ratchets deployment
 information back down.
 
 
+Origin
+------
+
+Before Scalarium became OpsWorks, they maintained a gem that did the sorts of
+functions described here.  Like Heroku Toolbelt, the Scalarium gem offered users
+a very basic workflow experience: upload and run Chef recipes, execute commands
+remotely and watch their output.
+
+
+Goals
+-----
+
+Dumbwaiter prescribes a very specific OpsWorks-centric workflow with the same
+feeling of the Scalarium gem's CLI:
+
+  * Create OpsWorks stacks, layers and instances via YAML files
+  * Collect custom Chef cookbooks via Berkshelf and upload to S3
+  * Create an application corresponding to a GitHub repo
+  * Run versioned deployments, rollbacks and one-off recipes
+
+
+Non-Goals
+---------
+
+Dumbwaiter only deals with OpsWorks workflow, excluding:
+
+  * Standing up VPCs
+  * Running CloudFormation templates
+  * One-off bash-level commands(^) and log tailing
+
+`^ Making a cookbook to run one-off commands is totally not unheard-of.`
+
+
 Installation
 ------------
 
@@ -28,13 +61,17 @@ Deploy the "cinnamon" branch of the "syrup" application to the "Pancake" stack:
 
   `dumbwaiter deploy Pancake syrup cinnamon`
 
-Roll back the "Snowman" stack's "dandruff" application:
-
-  `dumbwaiter rollback Snowman dandruff`
-
 List the deployments on the "Maniacal Checklist" stack:
 
   `dumbwaiter list "Maniacal Checklist"`
+
+Upload all the custom cookbooks for the "Sweden" stack:
+
+  `dumbwaiter rechef Sweden`
+
+Roll back the "Snowman" stack's "dandruff" application:
+
+  `dumbwaiter rollback Snowman dandruff`
 
 List the stacks and apps in your OpsWorks environment:
 
