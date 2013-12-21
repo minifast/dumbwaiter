@@ -30,6 +30,10 @@ class Dumbwaiter::Stack
     opsworks_stack.stack_id
   end
 
+  def color
+    opsworks_stack.attributes["Color"]
+  end
+
   def apps
     @apps ||= Dumbwaiter::App.all(self, opsworks)
   end

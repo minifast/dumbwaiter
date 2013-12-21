@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Dumbwaiter::Stack do
-  let(:fake_stack) { double(:stack, name: "ducks", stack_id: "cool") }
+  let(:fake_stack) { double(:stack, name: "ducks", stack_id: "cool", attributes: {"Color" => "hot pink"}) }
   let(:fake_stacks) { double(:stacks, stacks: [fake_stack]) }
   let(:fake_opsworks) { double(:opsworks, describe_stacks: fake_stacks) }
   let(:fake_app) { double(:app) }
@@ -19,6 +19,7 @@ describe Dumbwaiter::Stack do
   its(:opsworks_stack) { should == fake_stack }
   its(:id) { should == "cool" }
   its(:name) { should == "ducks" }
+  its(:color) { should == "hot pink" }
 
   its(:apps) { should == [fake_app] }
   its(:deployments) { should == [fake_deployment] }
