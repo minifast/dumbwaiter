@@ -26,7 +26,11 @@ class Dumbwaiter::Deployment
   end
 
   def user_name
-    user_profile.name
+    if opsworks_deployment.iam_user_arn.nil?
+      "?"
+    else
+      user_profile.name
+    end
   end
 
   def git_ref

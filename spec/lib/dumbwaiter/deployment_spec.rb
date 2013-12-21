@@ -24,8 +24,22 @@ describe Dumbwaiter::Deployment do
   its(:command_name) { should == "deplode" }
   its(:status) { should == "badical" }
   its(:git_ref) { should == "eh-buddy" }
-  its(:user_name) { should == "goose" }
   its(:to_log) { should == "#{DateTime.parse("last Tuesday")} - goose - deplode - badical - eh-buddy" }
+  its(:user_name) { should == "goose" }
+
+  context "when the iam user arn is nil" do
+    let(:fake_deployment) do
+      double(:deployment,
+        created_at: "last Tuesday",
+        command: fake_command,
+        status: "badical",
+        custom_json: custom_json,
+        iam_user_arn: nil
+      )
+    end
+
+    its(:user_name) { should == "?" }
+  end
 
   context "when custom_json is nil" do
     let(:fake_deployment) do
