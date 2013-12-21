@@ -8,19 +8,23 @@ describe Dumbwaiter::Deployment do
       created_at: "last Tuesday",
       command: fake_command,
       status: "badical",
-      custom_json: custom_json
+      custom_json: custom_json,
+      iam_user_arn: "ie"
     )
   end
   let(:fake_deployments) { double(:deployments, deployments: [fake_deployment]) }
-  let(:fake_opsworks) { double(:opsworks, describe_deployments: fake_deployments) }
+  let(:fake_user_profile) { double(:user_profile, name: "goose") }
+  let(:fake_user_profiles) { double(:user_profiles, user_profiles: [fake_user_profile]) }
+  let(:fake_opsworks) { double(:opsworks, describe_deployments: fake_deployments, describe_user_profiles: fake_user_profiles) }
 
-  subject(:deployment) { Dumbwaiter::Deployment.new(fake_deployment) }
+  subject(:deployment) { Dumbwaiter::Deployment.new(fake_deployment, fake_opsworks) }
 
   its(:opsworks_deployment) { should == fake_deployment }
   its(:created_at) { should == DateTime.parse("last Tuesday") }
   its(:command_name) { should == "deplode" }
   its(:status) { should == "badical" }
   its(:git_ref) { should == "eh-buddy" }
+  its(:user_name) { should == "goose" }
   its(:to_log) { should == "#{DateTime.parse("last Tuesday")} - deplode - badical - eh-buddy" }
 
   context "when custom_json is nil" do
