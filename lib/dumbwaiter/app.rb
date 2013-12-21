@@ -15,7 +15,7 @@ class Dumbwaiter::App
     app
   end
 
-  def initialize(stack, opsworks_app, opsworks)
+  def initialize(stack, opsworks_app, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
     @stack = stack
     @opsworks_app = opsworks_app
     @opsworks = opsworks

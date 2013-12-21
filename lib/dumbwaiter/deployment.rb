@@ -8,7 +8,7 @@ class Dumbwaiter::Deployment
     opsworks.describe_deployments(stack_id: stack.id).deployments.map { |d| new(d, opsworks) }
   end
 
-  def initialize(opsworks_deployment, opsworks)
+  def initialize(opsworks_deployment, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
     @opsworks_deployment = opsworks_deployment
     @opsworks = opsworks
   end

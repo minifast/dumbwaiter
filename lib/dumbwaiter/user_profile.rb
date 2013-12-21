@@ -6,7 +6,7 @@ class Dumbwaiter::UserProfile
 
   end
 
-  def initialize(opsworks_user_profile, opsworks)
+  def initialize(opsworks_user_profile, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
     @opsworks_user_profile = opsworks_user_profile
     @opsworks = opsworks
   end

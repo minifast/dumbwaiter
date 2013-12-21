@@ -15,7 +15,7 @@ class Dumbwaiter::Layer
     layer
   end
 
-  def initialize(stack, opsworks_layer, opsworks)
+  def initialize(stack, opsworks_layer, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
     @stack = stack
     @opsworks_layer = opsworks_layer
     @opsworks = opsworks

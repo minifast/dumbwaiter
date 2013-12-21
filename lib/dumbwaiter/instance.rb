@@ -6,7 +6,7 @@ class Dumbwaiter::Instance
     instances.map { |instance| new(layer, instance, opsworks) }
   end
 
-  def initialize(layer, opsworks_instance, opsworks)
+  def initialize(layer, opsworks_instance, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
     @layer = layer
     @opsworks_instance = opsworks_instance
     @opsworks = opsworks
