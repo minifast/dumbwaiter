@@ -1,9 +1,12 @@
 class Dumbwaiter::UserProfile
   attr_reader :opsworks_user_profile, :opsworks
 
-  def self.find(iam_user_arn, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
-    opsworks.describe_user_profiles(iam_user_arns: [iam_user_arn]).user_profiles.first
+  def self.cache
+    @cache ||= {}
+  end
 
+  def self.find(iam_user_arn, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+    cache[iam_user_arn] ||= opsworks.describe_user_profiles(iam_user_arns: [iam_user_arn]).user_profiles.first
   end
 
   def initialize(opsworks_user_profile, opsworks = Aws::OpsWorks.new(region: "us-east-1"))

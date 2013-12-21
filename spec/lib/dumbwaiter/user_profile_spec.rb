@@ -16,5 +16,11 @@ describe Dumbwaiter::UserProfile do
       fake_opsworks.should_receive(:describe_user_profiles).with(iam_user_arns: ["schwarz"])
       Dumbwaiter::UserProfile.find("schwarz", fake_opsworks).should == fake_user_profile
     end
+
+    it "caches duplicate requests for the same arn" do
+      fake_opsworks.should_receive(:describe_user_profiles).once
+      Dumbwaiter::UserProfile.find("schwarz", fake_opsworks)
+      Dumbwaiter::UserProfile.find("schwarz", fake_opsworks)
+    end
   end
 end

@@ -34,7 +34,7 @@ class Dumbwaiter::Deployment
   end
 
   def to_log
-    "#{created_at} - #{command_name} - #{status} - #{git_ref}"
+    "#{created_at} - #{user_name} - #{command_name} - #{status} - #{git_ref}"
   end
 
   protected

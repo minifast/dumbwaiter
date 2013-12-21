@@ -25,7 +25,7 @@ describe Dumbwaiter::Deployment do
   its(:status) { should == "badical" }
   its(:git_ref) { should == "eh-buddy" }
   its(:user_name) { should == "goose" }
-  its(:to_log) { should == "#{DateTime.parse("last Tuesday")} - deplode - badical - eh-buddy" }
+  its(:to_log) { should == "#{DateTime.parse("last Tuesday")} - goose - deplode - badical - eh-buddy" }
 
   context "when custom_json is nil" do
     let(:fake_deployment) do
