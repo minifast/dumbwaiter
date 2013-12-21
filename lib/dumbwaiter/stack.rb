@@ -12,8 +12,14 @@ class Dumbwaiter::Stack
   end
 
   def self.find(stack_name, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
-    stack = all(opsworks).detect { |stack| stack.name == stack_name}
+    stack = all(opsworks).detect { |stack| stack.name == stack_name }
     raise NotFound.new("No stack found with name #{stack_name}") if stack.nil?
+    stack
+  end
+
+  def self.find_by_id(stack_id, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+    stack = all(opsworks).detect { |stack| stack.id == stack_id }
+    raise NotFound.new("No stack found with id #{stack_id}") if stack.nil?
     stack
   end
 

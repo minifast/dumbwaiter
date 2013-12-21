@@ -47,6 +47,22 @@ describe Dumbwaiter::Stack do
     end
   end
 
+  describe ".find_by_id" do
+    context "when the stack exists" do
+      it "finds the stack by name" do
+        Dumbwaiter::Stack.find_by_id("cool", fake_opsworks).name.should == "ducks"
+      end
+    end
+
+    context "when the stack does not exist" do
+      it "blows up" do
+        expect {
+          Dumbwaiter::Stack.find_by_id("teeth", fake_opsworks)
+        }.to raise_error(Dumbwaiter::Stack::NotFound)
+      end
+    end
+  end
+
   describe "#rechef" do
     it "creates a deployment" do
       fake_opsworks.should_receive(:create_deployment) do |params|
