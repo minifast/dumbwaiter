@@ -10,8 +10,14 @@ class Dumbwaiter::App
   end
 
   def self.find(stack, app_name, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
-    app = all(stack, opsworks).detect { |app| app.name == app_name}
+    app = all(stack, opsworks).detect { |app| app.name == app_name }
     raise NotFound.new("No app found with name #{app_name}") if app.nil?
+    app
+  end
+
+  def self.find_by_id(stack, app_id, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+    app = all(stack, opsworks).detect { |app| app.id == app_id }
+    raise NotFound.new("No app found with id #{app_id}") if app.nil?
     app
   end
 

@@ -68,4 +68,20 @@ describe Dumbwaiter::App do
       end
     end
   end
+
+  describe ".find" do
+    context "when the app exists" do
+      it "finds the app by id" do
+        Dumbwaiter::App.find_by_id(fake_stack, "amazing", fake_opsworks).name.should == "goose"
+      end
+    end
+
+    context "when the app does not exist" do
+      it "blows up" do
+        expect {
+          Dumbwaiter::App.find_by_id(fake_stack, "teeth", fake_opsworks)
+        }.to raise_error(Dumbwaiter::App::NotFound)
+      end
+    end
+  end
 end

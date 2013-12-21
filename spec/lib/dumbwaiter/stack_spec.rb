@@ -49,7 +49,7 @@ describe Dumbwaiter::Stack do
 
   describe ".find_by_id" do
     context "when the stack exists" do
-      it "finds the stack by name" do
+      it "finds the stack by id" do
         Dumbwaiter::Stack.find_by_id("cool", fake_opsworks).name.should == "ducks"
       end
     end
