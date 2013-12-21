@@ -9,7 +9,8 @@ describe Dumbwaiter::Deployment do
       command: fake_command,
       status: "badical",
       custom_json: custom_json,
-      iam_user_arn: "ie"
+      iam_user_arn: "ie",
+      comment: "i love sports"
     )
   end
   let(:fake_deployments) { double(:deployments, deployments: [fake_deployment]) }
@@ -23,6 +24,7 @@ describe Dumbwaiter::Deployment do
   its(:created_at) { should == DateTime.parse("last Tuesday") }
   its(:command_name) { should == "deplode" }
   its(:status) { should == "badical" }
+  its(:comment) { should == "i love sports" }
   its(:git_ref) { should == "eh-buddy" }
   its(:to_log) { should == "#{DateTime.parse("last Tuesday")} - goose - deplode - badical - eh-buddy" }
   its(:user_name) { should == "goose" }

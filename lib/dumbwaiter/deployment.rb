@@ -21,6 +21,10 @@ class Dumbwaiter::Deployment
     opsworks_deployment.command.name
   end
 
+  def comment
+    opsworks_deployment.comment
+  end
+
   def status
     opsworks_deployment.status
   end
