@@ -5,7 +5,7 @@ describe Dumbwaiter::Deployment do
   let(:fake_stack) { fake_opsworks.make_stack("pancakes") }
   let(:fake_app) { fake_opsworks.make_app(fake_stack, "yo") }
   let!(:fake_user_profile) { fake_opsworks.make_user_profile("ie", "goose") }
-  let(:custom_json) { JSON.dump(deploy: {"hockey" => {scm: {revision: "eh-buddy"}}}) }
+  let(:custom_json) { Dumbwaiter::DeploymentCustomJson.create("hockey", "eh-buddy").to_json }
   let!(:fake_deployment) { fake_opsworks.make_deployment(fake_stack, fake_app, "jello", "deploy", "badical", custom_json, DateTime.parse("last Tuesday").to_s, "ie", "i love sports") }
   let(:real_stack) { Dumbwaiter::Stack.new(fake_stack, fake_opsworks) }
 
