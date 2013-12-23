@@ -1,23 +1,20 @@
 require "spec_helper"
 
 describe Dumbwaiter::Cli do
-  let(:fake_app) { double(:app, name: "reifel") }
-  let(:fake_layer) { double(:layer, shortname: "beans") }
-  let(:fake_stack) { double(:stack, name: "ducks", id: "wat", apps: [fake_app]) }
+  let(:fake_opsworks) { Dumbwaiter::Mock.new }
+  let!(:fake_stack) { fake_opsworks.make_stack("amazing", "ducks") }
+  let!(:fake_layer) { fake_opsworks.make_layer(fake_stack, "mighty", "beans") }
+  let!(:fake_app) { fake_opsworks.make_app(fake_stack, "delightful", "reifel") }
 
   subject(:cli) { Dumbwaiter::Cli.new }
 
-  before do
-    Dumbwaiter::Stack.stub(all: [fake_stack])
-    Dumbwaiter::App.stub(all: [fake_app])
-    Dumbwaiter::Layer.stub(all: [fake_layer])
-  end
+  before { Aws::OpsWorks.stub(new: fake_opsworks) }
 
   describe "#deploy" do
     context "when the stack exists" do
       context "when the app exists" do
         it "deploys the stack with the resolved id" do
-          fake_app.should_receive(:deploy).with("corn")
+          Dumbwaiter::App.any_instance.should_receive(:deploy).with("corn")
           cli.deploy("ducks", "reifel", "corn")
         end
       end
@@ -40,7 +37,7 @@ describe Dumbwaiter::Cli do
     context "when the stack exists" do
       context "when the app exists" do
         it "deploys the stack with the resolved id" do
-          fake_app.should_receive(:rollback)
+          Dumbwaiter::App.any_instance.should_receive(:rollback)
           cli.rollback("ducks", "reifel")
         end
       end
@@ -61,40 +58,38 @@ describe Dumbwaiter::Cli do
 
   describe "#list" do
     context "when the stack exists" do
-      before { fake_stack.stub(deployments: [fake_deployment]) }
-
       context "when the deployment is a rollback" do
-        let(:fake_deployment) { double(:deployment, command_name: "rollback", to_log: "oops!") }
+        before { fake_opsworks.make_deployment(fake_stack, fake_app, "jello", "rollback") }
 
         it "lists the deployment" do
-          Kernel.should_receive(:puts).with("oops!")
+          Kernel.should_receive(:puts) { |m| m.should =~ /rollback/ }
           cli.list("ducks")
         end
       end
 
       context "when the deployment is a deploy" do
-        let(:fake_deployment) { double(:deployment, command_name: "deploy", to_log: "whee!") }
+        before { fake_opsworks.make_deployment(fake_stack, fake_app, "jello", "deploy") }
 
         it "lists the deployment" do
-          Kernel.should_receive(:puts).with("whee!")
+          Kernel.should_receive(:puts) { |m| m.should =~ /deploy/ }
           cli.list("ducks")
         end
       end
 
       context "when the deployment is a custom cookbook update" do
-        let(:fake_deployment) { double(:deployment, command_name: "update_custom_cookbooks", to_log: "whee!") }
+        before { fake_opsworks.make_deployment(fake_stack, fake_app, "jello", "update_custom_cookbooks") }
 
         it "lists the deployment" do
-          Kernel.should_receive(:puts).with("whee!")
+          Kernel.should_receive(:puts) { |m| m.should =~ /update_custom_cookbooks/ }
           cli.list("ducks")
         end
       end
 
       context "when the deployment is a recipe execution" do
-        let(:fake_deployment) { double(:deployment, command_name: "execute_recipes", to_log: "whee!") }
+        before { fake_opsworks.make_deployment(fake_stack, fake_app, "jello", "execute_recipes") }
 
         it "lists the deployment" do
-          Kernel.should_receive(:puts).with("whee!")
+          Kernel.should_receive(:puts) { |m| m.should =~ /execute_recipes/ }
           cli.list("ducks")
         end
       end
@@ -118,10 +113,8 @@ describe Dumbwaiter::Cli do
 
   describe "#layers" do
     context "when the stack exists" do
-      before { fake_stack.stub(layers: [fake_layer]) }
-
       it "lists the layers" do
-        Kernel.should_receive(:puts).with("beans")
+        Kernel.should_receive(:puts).with(fake_layer.shortname)
         cli.layers("ducks")
       end
     end
@@ -136,7 +129,7 @@ describe Dumbwaiter::Cli do
   describe "#rechef" do
     context "when the stack exists" do
       it "deploys the stack with the resolved id" do
-        fake_stack.should_receive(:rechef)
+        Dumbwaiter::Stack.any_instance.should_receive(:rechef)
         cli.rechef("ducks")
       end
     end
@@ -152,7 +145,7 @@ describe Dumbwaiter::Cli do
     context "when the stack exists" do
       context "when the layer exists" do
         it "runs the recipe on the layer" do
-          fake_layer.should_receive(:run_recipe).with("meatballs")
+          Dumbwaiter::Layer.any_instance.should_receive(:run_recipe).with("meatballs")
           cli.run_recipe("ducks", "beans", "meatballs")
         end
       end

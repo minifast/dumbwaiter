@@ -1,7 +1,7 @@
 require "hashie"
 require "json"
 
-class Dumbwaiter::DeploymentCustomJson < Hashie::Mash
+class Dumbwaiter::DeploymentCustomJson
   def self.from_json(json_string)
     new(JSON.parse(json_string))
   end
@@ -10,15 +10,19 @@ class Dumbwaiter::DeploymentCustomJson < Hashie::Mash
     {deploy: {name => {scm: {revision: ref}}}}
   end
 
-  def app_name
-    self.deploy.keys.first unless self.deploy.nil?
+  def initialize(params)
+    @params = params
   end
 
-  def git_ref
-    if self.app_name.nil?
-      "HEAD"
-    else
-      self.deploy[self.app_name].scm.revision
-    end
+  def params
+    Hashie::Mash.new(@params)
+  end
+
+  def app_name
+    params.deploy.keys.first if params.deploy?
+  end
+
+  def revision
+    params.deploy[app_name].scm.revision unless app_name.nil?
   end
 end

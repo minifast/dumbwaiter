@@ -2,13 +2,14 @@ require "dumbwaiter/deployment_custom_json"
 require "dumbwaiter/user_profile"
 
 class Dumbwaiter::Deployment
-  attr_reader :opsworks_deployment, :opsworks
+  attr_reader :stack, :opsworks_deployment, :opsworks
 
   def self.all(stack, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
-    opsworks.describe_deployments(stack_id: stack.id).deployments.map { |d| new(d, opsworks) }
+    opsworks.describe_deployments(stack_id: stack.id).deployments.map { |d| new(stack, d, opsworks) }
   end
 
-  def initialize(opsworks_deployment, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def initialize(stack, opsworks_deployment, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+    @stack = stack
     @opsworks_deployment = opsworks_deployment
     @opsworks = opsworks
   end
@@ -30,22 +31,30 @@ class Dumbwaiter::Deployment
   end
 
   def user_name
-    if opsworks_deployment.iam_user_arn.nil?
-      "?"
+    if opsworks_deployment.iam_user_arn.nil? || user_profile.nil?
+      "OpsWorks"
     else
       user_profile.name
     end
   end
 
-  def git_ref
-    deployment_custom_json.git_ref
+  def revision
+    deployment_custom_json.revision || "#{app.revision}@{#{created_at}}"
   end
 
   def to_log
-    "#{created_at} - #{user_name} - #{command_name} - #{status} - #{git_ref}"
+    if command_name == "deploy"
+      "#{created_at} - #{user_name} - #{command_name} - #{status} - #{revision}"
+    else
+      "#{created_at} - #{user_name} - #{command_name} - #{status}"
+    end
   end
 
   protected
+
+  def app
+    Dumbwaiter::App.find_by_id(stack, opsworks_deployment.app_id, opsworks)
+  end
 
   def user_profile
     Dumbwaiter::UserProfile.find(opsworks_deployment.iam_user_arn, opsworks)

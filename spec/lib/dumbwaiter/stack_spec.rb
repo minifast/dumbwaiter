@@ -1,29 +1,21 @@
 require "spec_helper"
 
 describe Dumbwaiter::Stack do
-  let(:fake_stack) { double(:stack, name: "ducks", stack_id: "cool", attributes: {"Color" => "hot pink"}) }
-  let(:fake_stacks) { double(:stacks, stacks: [fake_stack]) }
-  let(:fake_opsworks) { double(:opsworks, describe_stacks: fake_stacks) }
-  let(:fake_app) { double(:app) }
-  let(:fake_deployment) { double(:deployment) }
-  let(:fake_layer) { double(:layer) }
+  let(:fake_opsworks) { Dumbwaiter::Mock.new }
+  let!(:fake_stack) { fake_opsworks.make_stack("cool", "ducks", "hot pink") }
+  let!(:fake_app) { fake_opsworks.make_app(fake_stack) }
+  let!(:fake_deployment) { fake_opsworks.make_deployment(fake_stack, fake_app) }
+  let!(:fake_layer) { fake_opsworks.make_layer(fake_stack) }
 
   subject(:stack) { Dumbwaiter::Stack.new(fake_stack, fake_opsworks) }
 
-  before do
-    Dumbwaiter::App.stub(all: [fake_app])
-    Dumbwaiter::Deployment.stub(all: [fake_deployment])
-    Dumbwaiter::Layer.stub(all: [fake_layer])
-  end
+  it { should have(1).apps }
+  it { should have(1).deployments }
+  it { should have(1).layers }
 
-  its(:opsworks_stack) { should == fake_stack }
   its(:id) { should == "cool" }
   its(:name) { should == "ducks" }
   its(:color) { should == "hot pink" }
-
-  its(:apps) { should == [fake_app] }
-  its(:deployments) { should == [fake_deployment] }
-  its(:layers) { should == [fake_layer] }
 
   describe ".all" do
     it "fetches all the stacks" do

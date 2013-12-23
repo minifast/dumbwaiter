@@ -7,14 +7,14 @@ describe Dumbwaiter::DeploymentCustomJson do
     let(:custom_json) { {} }
 
     its(:app_name) { should be_nil }
-    its(:git_ref) { should == "HEAD" }
+    its(:revision) { should be_nil }
   end
 
   context "when the custom json contains a revision" do
     let(:custom_json) { {deploy: {"reifel" => {scm: {revision: "corn"}}}} }
 
     its(:app_name) { should == "reifel" }
-    its(:git_ref) { should == "corn" }
+    its(:revision) { should == "corn" }
   end
 
   describe ".create" do
@@ -28,6 +28,6 @@ describe Dumbwaiter::DeploymentCustomJson do
     subject(:json) { Dumbwaiter::DeploymentCustomJson.from_json(json_string) }
 
     its(:app_name) { should == "toes" }
-    its(:git_ref) { should == "jam" }
+    its(:revision) { should == "jam" }
   end
 end

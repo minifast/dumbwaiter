@@ -35,6 +35,14 @@ class Dumbwaiter::App
     opsworks_app.app_id
   end
 
+  def url
+    opsworks_app.app_source.url
+  end
+
+  def revision
+    opsworks_app.app_source.revision || "master"
+  end
+
   def deploy(revision = nil)
     deployment = as_deployment("deploy", args: {migrate: ["true"]})
     unless revision.nil?
