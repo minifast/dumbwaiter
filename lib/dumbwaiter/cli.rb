@@ -81,7 +81,7 @@ module Dumbwaiter
     def layers(stack_name)
       stack = Stack.find(stack_name)
       layer_names = stack.layers.map(&:shortname)
-      Kernel.puts(layer_names.join(', '))
+      Kernel.puts(layer_names.join(" "))
     rescue Dumbwaiter::Stack::NotFound => e
       raise Thor::Error.new(e.message)
     end

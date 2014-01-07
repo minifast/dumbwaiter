@@ -113,8 +113,10 @@ describe Dumbwaiter::Cli do
 
   describe "#layers" do
     context "when the stack exists" do
+      before { fake_opsworks.make_layer(fake_stack, "handsome", "frijoles") }
+
       it "lists the layers" do
-        Kernel.should_receive(:puts).with(fake_layer.shortname)
+        Kernel.should_receive(:puts).with("beans frijoles")
         cli.layers("ducks")
       end
     end
@@ -168,7 +170,7 @@ describe Dumbwaiter::Cli do
     context "when the stack exists" do
       context "when the layer exists" do
         it "prints custom recipes for a layer event" do
-          Kernel.should_receive(:puts) { |m| m.should == "ham salami" }
+          Kernel.should_receive(:puts).with("ham salami")
           cli.custom_recipes("ducks", "beans", "setup")
         end
       end
