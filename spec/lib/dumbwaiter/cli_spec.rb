@@ -3,7 +3,7 @@ require "spec_helper"
 describe Dumbwaiter::Cli do
   let(:fake_opsworks) { Dumbwaiter::Mock.new }
   let!(:fake_stack) { fake_opsworks.make_stack("amazing", "ducks") }
-  let!(:fake_layer) { fake_opsworks.make_layer(fake_stack, "mighty", "beans") }
+  let!(:fake_layer) { fake_opsworks.make_layer(fake_stack, "mighty", "beans", setup: %w[ham salami]) }
   let!(:fake_app) { fake_opsworks.make_app(fake_stack, "delightful", "reifel") }
 
   subject(:cli) { Dumbwaiter::Cli.new }
@@ -152,14 +152,37 @@ describe Dumbwaiter::Cli do
 
       context "when the layer does not exist" do
         it "blows up" do
-          expect { cli.run_recipe("ducks", "brick", "meatballs") }.to raise_error(Thor::Error)
+          expect { cli.run_recipe("ducks", "brick", "setup") }.to raise_error(Thor::Error)
         end
       end
     end
 
     context "when the stack does not exist" do
       it "blows up" do
-        expect { cli.run_recipe("toques", "beans", "meatballs") }.to raise_error(Thor::Error)
+        expect { cli.run_recipe("toques", "beans", "setup") }.to raise_error(Thor::Error)
+      end
+    end
+  end
+
+  describe "#custom_recipes" do
+    context "when the stack exists" do
+      context "when the layer exists" do
+        it "prints custom recipes for a layer event" do
+          Kernel.should_receive(:puts) { |m| m.should == "ham salami" }
+          cli.custom_recipes("ducks", "beans", "setup")
+        end
+      end
+
+      context "when the layer does not exist" do
+        it "blows up" do
+          expect { cli.custom_recipes("ducks", "brick", "setup") }.to raise_error(Thor::Error)
+        end
+      end
+    end
+
+    context "when the stack does not exist" do
+      it "blows up" do
+        expect { cli.custom_recipes("toques", "beans", "setup") }.to raise_error(Thor::Error)
       end
     end
   end
