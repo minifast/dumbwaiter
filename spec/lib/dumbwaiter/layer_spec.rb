@@ -3,7 +3,7 @@ require "spec_helper"
 describe Dumbwaiter::Layer do
   let(:fake_opsworks) { Dumbwaiter::Mock.new }
   let(:fake_stack) { fake_opsworks.make_stack("pancakes") }
-  let(:fake_layer) { fake_opsworks.make_layer(fake_stack, "pinto", "meaty") }
+  let(:fake_layer) { fake_opsworks.make_layer(fake_stack, "pinto", "meaty", setup: ["ham"]) }
   let!(:fake_instance) { fake_opsworks.make_instance(fake_layer, fake_stack, "dragons") }
 
   let(:real_stack) { Dumbwaiter::Stack.new(fake_stack, fake_opsworks) }
@@ -13,6 +13,7 @@ describe Dumbwaiter::Layer do
   its(:opsworks_layer) { should == fake_layer }
   its(:id) { should == "pinto" }
   its(:shortname) { should == "meaty" }
+  its(:custom_recipes) { should include(setup: ["ham"]) }
 
   it { should have(1).instances }
 
@@ -49,6 +50,23 @@ describe Dumbwaiter::Layer do
         params[:command].should == {name: "execute_recipes", args: {recipes: ["meatballs"]}}
       end
       layer.run_recipe("meatballs")
+    end
+  end
+
+  describe "#update_custom_recipes" do
+    it "overwrites existing custom recipes for an event" do
+      fake_opsworks.should_receive(:update_layer) do |params|
+        params[:layer_id].should == "pinto"
+        params[:custom_recipes].should include(setup: ["feet"])
+      end
+      layer.update_custom_recipes(:setup, ["feet"])
+    end
+
+    it "preserves existing custom recipes for an event when updating another event" do
+      fake_opsworks.should_receive(:update_layer) do |params|
+        params[:custom_recipes].should include(setup: ["ham"])
+      end
+      layer.update_custom_recipes(:deploy, ["feet"])
     end
   end
 end

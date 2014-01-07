@@ -37,8 +37,8 @@ class Dumbwaiter::Mock
     app
   end
 
-  def make_layer(stack = make_stack, id = make_id, shortname = Faker::Name.first_name.downcase)
-    layer = OpenStruct.new(stack_id: stack.stack_id, layer_id: id, shortname: shortname)
+  def make_layer(stack = make_stack, id = make_id, shortname = Faker::Name.first_name.downcase, custom_recipes = {})
+    layer = OpenStruct.new(stack_id: stack.stack_id, layer_id: id, shortname: shortname, custom_recipes: make_custom_default_recipes.merge(custom_recipes))
     layers << layer
     layer
   end
@@ -63,6 +63,10 @@ class Dumbwaiter::Mock
   end
 
   protected
+
+  def make_custom_default_recipes
+    {setup: [], configure: [], deploy: [], undeploy: [], shutdown:[]}
+  end
 
   def make_app_source(url, revision)
     OpenStruct.new(url: url, revision: revision)

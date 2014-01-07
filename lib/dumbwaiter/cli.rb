@@ -54,6 +54,15 @@ module Dumbwaiter
       raise Thor::Error.new(e.message)
     end
 
+    desc "update_custom_recipes STACK LAYER EVENT RECIPE...", "Update custom recipes for an event"
+    def update_custom_recipes(stack_name, layer_name, event_name, *recipes)
+      stack = Stack.find(stack_name)
+      layer = Layer.find(stack, layer_name)
+      layer.update_custom_recipes(event_name.to_sym, recipes)
+    rescue Dumbwaiter::Stack::NotFound, Dumbwaiter::Layer::NotFound => e
+      raise Thor::Error.new(e.message)
+    end
+
     desc "stacks", "List all the stacks"
     def stacks
       Stack.all.each { |stack| Kernel.puts("#{stack.name}: #{stack.apps.map(&:name).join(', ')}") }
