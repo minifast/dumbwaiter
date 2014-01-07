@@ -164,6 +164,29 @@ describe Dumbwaiter::Cli do
     end
   end
 
+  describe "#update_custom_recipes" do
+    context "when the stack exists" do
+      context "when the layer exists" do
+        it "updates custom recipes on the layer for the event" do
+          Dumbwaiter::Layer.any_instance.should_receive(:update_custom_recipes).with(:setup, ["eggs"])
+          cli.update_custom_recipes("ducks", "beans", "setup", "eggs")
+        end
+      end
+
+      context "when the layer does not exist" do
+        it "blows up" do
+          expect { cli.update_custom_recipes("ducks", "brick", "meatballs") }.to raise_error(Thor::Error)
+        end
+      end
+    end
+
+    context "when the stack does not exist" do
+      it "blows up" do
+        expect { cli.update_custom_recipes("toques", "beans", "meatballs") }.to raise_error(Thor::Error)
+      end
+    end
+  end
+
   describe "#stacks" do
     it "lists the stacks" do
       Kernel.should_receive(:puts).with("ducks: reifel")

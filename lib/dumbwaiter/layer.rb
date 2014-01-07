@@ -40,6 +40,17 @@ class Dumbwaiter::Layer
     )
   end
 
+  def custom_recipes
+    opsworks_layer.custom_recipes.to_hash
+  end
+
+  def update_custom_recipes(event_name, runlist)
+    opsworks.update_layer(
+      layer_id: id,
+      custom_recipes: custom_recipes.merge(event_name => runlist)
+    )
+  end
+
   def instances
     @instances ||= Dumbwaiter::Instance.all(self, opsworks)
   end
