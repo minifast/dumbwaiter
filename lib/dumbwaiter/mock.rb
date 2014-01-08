@@ -1,3 +1,4 @@
+require "ostruct"
 require "faker"
 
 class Dumbwaiter::Mock
