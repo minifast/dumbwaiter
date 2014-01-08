@@ -4,6 +4,11 @@ require "faker"
 class Dumbwaiter::Mock
   attr_reader :stacks, :deployments, :apps, :layers, :instances, :user_profiles
 
+  class HashWithIndifferentAccess < Hash
+    include Hashie::Extensions::MergeInitializer
+    include Hashie::Extensions::IndifferentAccess
+  end
+
   def opsworks; self; end
   def describe_stacks(*_); OpenStruct.new(stacks: stacks); end
   def describe_deployments(*_); OpenStruct.new(deployments: deployments); end
@@ -22,56 +27,83 @@ class Dumbwaiter::Mock
   end
 
   def initialize
-    super
     clear
   end
 
-  def make_stack(id = make_id, name = Faker::Name.first_name, color = make_color)
-    stack = OpenStruct.new(stack_id: id, name: name, attributes: {"Color" => color})
+  def create_stack(params = {})
+    params[:name] ||= Faker::Name.first_name
+    params[:attributes] ||= {}
+    params[:attributes]["Color"] ||= make_color
+    stack = OpenStruct.new(params.merge(stack_id: make_id))
     stacks << stack
     stack
   end
 
-  def make_app(stack = make_stack, id = make_id, name = Faker::Name.first_name, url = Faker::Internet.url, revision = make_revision)
-    app = OpenStruct.new(stack_id: stack.stack_id, app_id: id, name: name, app_source: make_app_source(url, revision))
+  def create_app(params = {})
+    params[:stack_id] ||= create_stack.stack_id
+    params[:name] ||= Faker::Name.last_name
+    params[:shortname] ||= Faker::Name.first_name.downcase
+    params[:app_source] = Hashie::Mash.new(params.fetch(:app_source, {}))
+    params[:app_source][:url] ||= Faker::Internet.url
+    params[:app_source][:revision] = params[:app_source].fetch(:revision, make_revision)
+    app = OpenStruct.new(params.merge(app_id: make_id))
     apps << app
     app
   end
 
-  def make_layer(stack = make_stack, id = make_id, shortname = Faker::Name.first_name.downcase, custom_recipes = {})
-    layer = OpenStruct.new(stack_id: stack.stack_id, layer_id: id, shortname: shortname, custom_recipes: make_custom_default_recipes.merge(custom_recipes))
+  def create_layer(params = {})
+    params[:stack_id] ||= create_stack.stack_id
+    params[:name] ||= Faker::Name.last_name
+    params[:shortname] ||= Faker::Name.first_name.downcase
+    params[:custom_recipes] = HashWithIndifferentAccess.new(params[:custom_recipes] || {})
+    params[:custom_recipes] = HashWithIndifferentAccess.new(setup: [], configure: [], deploy: [], undeploy: [], shutdown:[]).merge(params[:custom_recipes])
+    params[:type] ||= %w[lb web php-app rails-app nodejs-app memcached db-master monitoring-master custom].sample
+    layer = OpenStruct.new(params.merge(layer_id: make_id))
     layers << layer
     layer
   end
 
-  def make_deployment(stack = make_stack, app = make_app, id = make_id, command_name = Faker::Name.first_name.downcase, status = Faker::Name.first_name, custom_json = "{}", at = Time.now.to_s, arn = Faker::Name.first_name, comment = Faker::Company.bs)
-    command = OpenStruct.new(name: command_name)
-    deployment = OpenStruct.new(stack_id: stack.stack_id, app_id: app.app_id, deployment_id: id, command: command, created_at: at, status: status, comment: comment, iam_user_arn: arn, custom_json: custom_json)
+  def create_deployment(params = {})
+    params[:stack_id] ||= create_stack.stack_id
+    params[:app_id] ||= create_app.app_id
+    params[:command] = Hashie::Mash.new(params.fetch(:command, {}))
+    params[:command][:name] ||= %w[install_dependencies update_dependencies update_custom_cookbooks execute_recipes deploy rollback start stop restart undeploy].sample
+    params[:custom_json] ||= "{}"
+    params[:comment] ||= Faker::Company.bs
+    params[:iam_user_arn] = params.fetch(:iam_user_arn, create_user_profile.iam_user_arn)
+    params[:created_at] ||= Time.now.to_s
+    params[:status] ||= %w[running failed successful].sample
+    deployment = OpenStruct.new(params.merge(deployment_id: make_id))
     deployments << deployment
     deployment
   end
 
-  def make_instance(stack = make_stack, layer = make_layer, id = make_id)
-    instance = OpenStruct.new(layer_id: layer.layer_id, stack_id: stack.stack_id, instance_id: id)
+  def create_instance(params = {})
+    params[:stack_id] ||= create_stack.stack_id
+    params[:layer_id] ||= create_layer.layer_id
+    instance = OpenStruct.new(params.merge(instance_id: make_id))
     instances << instance
     instance
   end
 
-  def make_user_profile(id = Faker::Name.last_name.downcase, name = Faker::Name.first_name)
-    user_profile = OpenStruct.new(aws_iam_arn: id, name: name)
+  def create_instance(params = {})
+    params[:stack_id] ||= create_stack.stack_id
+    params[:layer_id] ||= create_layer.layer_id
+    instance = OpenStruct.new(params.merge(instance_id: make_id))
+    instances << instance
+    instance
+  end
+
+  def create_user_profile(params = {})
+    params[:iam_user_arn] ||= Faker::Name.first_name.downcase
+    params[:ssh_username] ||= Faker::Name.first_name.downcase
+    params[:name] ||= Faker::Name.first_name.downcase
+    user_profile = OpenStruct.new(params)
     user_profiles << user_profile
     user_profile
   end
 
   protected
-
-  def make_custom_default_recipes
-    {setup: [], configure: [], deploy: [], undeploy: [], shutdown:[]}
-  end
-
-  def make_app_source(url, revision)
-    OpenStruct.new(url: url, revision: revision)
-  end
 
   def make_revision
     "%06x" % (rand * 0xffffff)

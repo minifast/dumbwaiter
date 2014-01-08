@@ -58,7 +58,8 @@ module Dumbwaiter
     def custom_recipes(stack_name, layer_name, event_name)
       stack = Stack.find(stack_name)
       layer = Layer.find(stack, layer_name)
-      Kernel.puts(layer.custom_recipes[event_name.to_sym].join(" "))
+      recipes = layer.custom_recipes.fetch(event_name, []).join(" ")
+      Kernel.puts(recipes)
     rescue Dumbwaiter::Stack::NotFound, Dumbwaiter::Layer::NotFound => e
       raise Thor::Error.new(e.message)
     end

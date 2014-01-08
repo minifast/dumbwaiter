@@ -31,7 +31,7 @@ class Dumbwaiter::Deployment
   end
 
   def user_name
-    if opsworks_deployment.iam_user_arn.nil? || user_profile.nil?
+    if user_profile.nil?
       "OpsWorks"
     else
       user_profile.name

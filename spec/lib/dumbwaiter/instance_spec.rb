@@ -2,9 +2,9 @@ require "spec_helper"
 
 describe Dumbwaiter::Instance do
   let(:fake_opsworks) { Dumbwaiter::Mock.new }
-  let(:fake_stack) { fake_opsworks.make_stack }
-  let(:fake_layer) { fake_opsworks.make_layer(fake_stack) }
-  let!(:fake_instance) { fake_opsworks.make_instance(fake_stack, fake_layer) }
+  let(:fake_stack) { fake_opsworks.create_stack }
+  let(:fake_layer) { fake_opsworks.create_layer }
+  let!(:fake_instance) { fake_opsworks.create_instance(stack_id: fake_stack.stack_id, layer_id: fake_layer.layer_id) }
 
   subject(:instance) { Dumbwaiter::Instance.new(fake_layer, fake_instance, fake_opsworks) }
 
