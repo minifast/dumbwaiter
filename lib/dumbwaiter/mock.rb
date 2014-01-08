@@ -86,14 +86,6 @@ class Dumbwaiter::Mock
     instance
   end
 
-  def create_instance(params = {})
-    params[:stack_id] ||= create_stack.stack_id
-    params[:layer_id] ||= create_layer.layer_id
-    instance = OpenStruct.new(params.merge(instance_id: make_id))
-    instances << instance
-    instance
-  end
-
   def create_user_profile(params = {})
     params[:iam_user_arn] ||= Faker::Name.first_name.downcase
     params[:ssh_username] ||= Faker::Name.first_name.downcase
