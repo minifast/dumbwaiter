@@ -22,5 +22,16 @@ describe Dumbwaiter::UserProfile do
       Dumbwaiter::UserProfile.find("schwarz", fake_opsworks)
       Dumbwaiter::UserProfile.find("schwarz", fake_opsworks)
     end
+
+    context "when the incoming user arn is nil" do
+      it "returns nil" do
+        Dumbwaiter::UserProfile.find(nil, fake_opsworks).should be_nil
+      end
+
+      it "does not ask opsworks for the user profile" do
+        fake_opsworks.should_not_receive(:describe_user_profiles)
+        Dumbwaiter::UserProfile.find(nil, fake_opsworks)
+      end
+    end
   end
 end

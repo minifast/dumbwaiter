@@ -6,6 +6,7 @@ class Dumbwaiter::UserProfile
   end
 
   def self.find(iam_user_arn, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+    return nil if iam_user_arn.nil?
     unless cache.has_key?(iam_user_arn)
       cache[iam_user_arn] = opsworks.describe_user_profiles(iam_user_arns: [iam_user_arn]).user_profiles.detect { |p| p.iam_user_arn == iam_user_arn }
     end
