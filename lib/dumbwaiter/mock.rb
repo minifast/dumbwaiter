@@ -55,8 +55,8 @@ class Dumbwaiter::Mock
     params[:stack_id] ||= create_stack.stack_id
     params[:name] ||= Faker::Name.last_name
     params[:shortname] ||= Faker::Name.first_name.downcase
-    params[:custom_recipes] = HashWithIndifferentAccess.new(params[:custom_recipes] || {})
-    params[:custom_recipes] = HashWithIndifferentAccess.new(setup: [], configure: [], deploy: [], undeploy: [], shutdown:[]).merge(params[:custom_recipes])
+    params[:custom_recipes] = params[:custom_recipes] || {}
+    params[:custom_recipes] = {setup: [], configure: [], deploy: [], undeploy: [], shutdown:[]}.merge(params[:custom_recipes])
     params[:type] ||= %w[lb web php-app rails-app nodejs-app memcached db-master monitoring-master custom].sample
     layer = OpenStruct.new(params.merge(layer_id: make_id))
     layers << layer
