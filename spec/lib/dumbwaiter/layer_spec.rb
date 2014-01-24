@@ -54,6 +54,15 @@ describe Dumbwaiter::Layer do
       end
       layer.run_recipe("meatballs")
     end
+
+    it "executes multiple recipes" do
+      fake_opsworks.should_receive(:create_deployment) do |params|
+        params[:command][:args][:recipes].should == %w[
+          horrifying::salad regrettable::potatoes
+        ]
+      end
+      layer.run_recipe("horrifying::salad", "regrettable::potatoes")
+    end
   end
 
   describe "#update_custom_recipes" do
