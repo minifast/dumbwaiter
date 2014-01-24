@@ -29,13 +29,13 @@ class Dumbwaiter::Layer
     opsworks_layer.shortname
   end
 
-  def run_recipe(recipe)
+  def run_recipe(*recipes)
     opsworks.create_deployment(
       stack_id: stack.id,
       instance_ids: instances.map(&:id),
       command: {
         name: "execute_recipes",
-        args: {recipes: [recipe]}
+        args: {recipes: recipes}
       }
     )
   end
