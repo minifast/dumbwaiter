@@ -4,11 +4,11 @@ require "dumbwaiter/user_profile"
 class Dumbwaiter::Deployment
   attr_reader :stack, :opsworks_deployment, :opsworks
 
-  def self.all(stack, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.all(stack, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     opsworks.describe_deployments(stack_id: stack.id).deployments.map { |d| new(stack, d, opsworks) }
   end
 
-  def initialize(stack, opsworks_deployment, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def initialize(stack, opsworks_deployment, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     @stack = stack
     @opsworks_deployment = opsworks_deployment
     @opsworks = opsworks
