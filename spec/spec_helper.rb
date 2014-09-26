@@ -3,6 +3,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "dumbwaiter"
 require "dumbwaiter/mock"
+require "rspec/its"
+require 'rspec/collection_matchers'
 
 Aws.config = {access_key_id: "tacos", secret_access_key: "secret chocolate"}
 I18n.enforce_available_locales = false
