@@ -8,7 +8,7 @@ describe Dumbwaiter::Cli do
 
   subject(:cli) { Dumbwaiter::Cli.new }
 
-  before { Aws::OpsWorks.stub(new: fake_opsworks) }
+  before { Aws::OpsWorks::Client.stub(new: fake_opsworks) }
 
   describe "#deploy" do
     context "when the stack exists" do

@@ -5,23 +5,23 @@ class Dumbwaiter::App
 
   attr_reader :stack, :opsworks_app, :opsworks
 
-  def self.all(stack, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.all(stack, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     opsworks.describe_apps(stack_id: stack.id).apps.map { |app| new(stack, app, opsworks) }
   end
 
-  def self.find(stack, app_name, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.find(stack, app_name, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     app = all(stack, opsworks).detect { |app| app.name == app_name }
     raise NotFound.new("No app found with name #{app_name}") if app.nil?
     app
   end
 
-  def self.find_by_id(stack, app_id, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.find_by_id(stack, app_id, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     app = all(stack, opsworks).detect { |app| app.id == app_id }
     raise NotFound.new("No app found with id #{app_id}") if app.nil?
     app
   end
 
-  def initialize(stack, opsworks_app, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def initialize(stack, opsworks_app, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     @stack = stack
     @opsworks_app = opsworks_app
     @opsworks = opsworks

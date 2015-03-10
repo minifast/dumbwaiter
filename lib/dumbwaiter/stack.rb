@@ -7,23 +7,23 @@ class Dumbwaiter::Stack
 
   class NotFound < Exception; end
 
-  def self.all(opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.all(opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     opsworks.describe_stacks.stacks.map { |stack| new(stack, opsworks) }
   end
 
-  def self.find(stack_name, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.find(stack_name, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     stack = all(opsworks).detect { |stack| stack.name == stack_name }
     raise NotFound.new("No stack found with name #{stack_name}") if stack.nil?
     stack
   end
 
-  def self.find_by_id(stack_id, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def self.find_by_id(stack_id, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     stack = all(opsworks).detect { |stack| stack.id == stack_id }
     raise NotFound.new("No stack found with id #{stack_id}") if stack.nil?
     stack
   end
 
-  def initialize(opsworks_stack, opsworks = Aws::OpsWorks.new(region: "us-east-1"))
+  def initialize(opsworks_stack, opsworks = Aws::OpsWorks::Client.new(region: "us-east-1"))
     @opsworks = opsworks
     @opsworks_stack = opsworks_stack
   end
